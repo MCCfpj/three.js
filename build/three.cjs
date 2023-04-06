@@ -25807,7 +25807,7 @@ class WebXRManager extends EventDispatcher {
 
 		let session = null;
 		let sessionMode = null;
-		
+
 		let framebufferScaleFactor = 1.0;
 
 		let referenceSpace = null;
@@ -26057,7 +26057,7 @@ class WebXRManager extends EventDispatcher {
 
 					const layerInit = {
 						antialias: ( session.renderState.layers === undefined ) ? attributes.antialias : true,
-						alpha: attributes.alpha,
+						alpha: true,
 						depth: attributes.depth,
 						stencil: attributes.stencil,
 						framebufferScaleFactor: framebufferScaleFactor
@@ -28556,6 +28556,7 @@ class WebGLRenderer {
 
 			} else {
 
+				 state.buffers.color.setClear( 0, 0, 0, 0, true );
 				_this.clear( true, true, true );
 
 			}
