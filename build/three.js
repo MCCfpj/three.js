@@ -25811,6 +25811,8 @@ console.warn( 'Scripts "build/three.js" and "build/three.min.js" are deprecated 
 			const scope = this;
 
 			let session = null;
+			let sessionMode = null;
+			
 			let framebufferScaleFactor = 1.0;
 
 			let referenceSpace = null;
@@ -26139,6 +26141,18 @@ console.warn( 'Scripts "build/three.js" and "build/three.min.js" are deprecated 
 					scope.dispatchEvent( { type: 'sessionstart' } );
 
 				}
+
+			};
+
+			this.getSessionMode = function () {
+
+				return sessionMode;
+
+			};
+
+			this.setSessionMode = function ( value ) {
+
+				sessionMode = value;
 
 			};
 
@@ -28541,7 +28555,16 @@ console.warn( 'Scripts "build/three.js" and "build/three.min.js" are deprecated 
 
 				//
 
-				background.render( currentRenderList, scene );
+				if ( xr.getSessionMode() !== 'immersive-ar' ) {
+
+					background.render( currentRenderList, scene );
+
+				} else {
+
+					_this.clear( true, true, true );
+
+				}
+
 
 				// render scene
 
