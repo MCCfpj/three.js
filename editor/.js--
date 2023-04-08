@@ -1,0 +1,536 @@
+   1 /*
+ 
+  12 function () { }
+  13 var Obj = null;
+  14 w3dshow.prototype.start = function () {
+  15     //此处用于判断浏览器
+  16     
+  17     //开始
+  18     var _this = this;
+  19     Obj = _this;
+  20     _this.initThree(_this.fId);
+  21     _this.initCamera();
+  22     _this.initScene();
+  23     _   26     //添加3D对象
+  27     $.each(_this.objList, function (index,_obj) {
+  28         _this.InitAddObject(_obj);
+  29     });
+  30     _this.initMouseCtrl();
+  31     //创建按钮
+  32     _this.addBtns(_this.btns);
+  33 
+  34     _this.animation();
+  35   
+  36 }
+  37 /*
+  38 方法：初始化
+  39 fid 画布所属div的Id
+  40 option:参数 {
+  41             antialias:true,//抗锯齿效果为设置有效
+  42             clearCoolr:0xFFFFFF,
+  43             showHelpGrid:false,//是否显示网格线
+  44                 }
+  45 */
+  46 w3dshow.prototype.init = function (_fId, _option,_datajson) {
+  47     //参数处理
+  48     this.option = new Object();
+  49     this.opt 器
+  57     this.camera = null;//摄像机
+  58     this.scene = null;//场景
+  59     this.SELECTED=null;
+  60     this.objects = [];
+  61     this.mouseClick = new THREE.Vector2();
+  62     this.raycaster = new THREE.Raycaster();
+  63     this.controls = null;//鼠标控制器
+  64     this.objList = _datajson.objects;//对象列表
+  65     this.eventList = _datajson.events;//事件对象列表
+  66     this.btns = _datajson.btns;//按钮列表
+  67     var _this = this;
+  68 }
+  69 //初始化渲染器
+  70 w3dshow.prototype.initThree = function () {
+  71     var _this = this;
+  72     _this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: _this.option.antialias });
+  73     _this oft = true;
+  78     //事件
+  79     _this.renderer.domElement.addEventListener('mousedown', _this.onDocumentMouseDown, false);
+  80     _this.renderer.domElement.addEventListener('mousemove', _this.onDocumentMouseMove, false);
+  81 }
+  82 //初始化摄像机
+  83 w3dshow.prototype.initCamera = function () {
+  84     var _this = this;
+  85     _this.camera = new THREE.PerspectiveCamera(45, _this.width / _this.height, 1, 100000);
+  86     _this.camera.name = 'mainCamera';
+  87     _this.camera.position.x =0;
+  88     _thi  x: 0, y: 0, z: 0 });
+  94     _this.objects.push(_this.camera);
+  95 }
+  96 //创建场景
+  97 w3dshow.prototype.initScene=function() {
+  98     var _this = this;
+  99     _this.scene = new THREE.Scene();
+ 100 }
+ 101 //添加对象
+ 102 w3dshow.prototype.addObject = function (_obj) {
+ 103     var _this = Obj;
+ 104     _this.objects.push(_obj);
+ 105     _this.scene.add(_obj);
+ 106 }
+ 107 //创建网格线
+ 108 w3dshow.prototype.initHelpGrid = function () {
+ototype.initLight = function () {
+ 117     /*
+ 118     AmbientLight: 环境光，基础光源，它的颜色会被加载到整个场景和所有对象的当前颜色上。
+ 119 PointLight：点光源，朝着所有方向都发射光线
+ 120 SpotLight ：聚光灯光源：类型台灯，天花板上的吊灯，手电筒等
+ 121 DirectionalLight：方向光，又称无限光，从这个发出的光源可以看做是平行光.
+ 122     */
+ 123     var _this = this;
+ 124     var light = new THREE.AmbientLight(0xcccccc);
+ 125     light.position.set(0, 0,0);
+ 126     _this.scene.add(light);
+ 127     var ligh 
+ 134 }
+ 135 //创建鼠标控制器
+ 136 w3dshow.prototype.initMouseCtrl=function() {
+ 137     var _this = thi  140 }
+ 141 //控制器回调
+ 142 w3dshow.prototype.updateControls = function () {
+ 143     
+ 144    //controls.update();
+ 145 }
+ 146 //循环渲染界面
+ 147 w3dshow.prototype.animation = function () {
+ 148     var _this = Obj;
+ 149     if (TWEEN != null && typeof (TWEEN) != 'undefined') {
+ 150         TWEEN.update();
+ 151     }
+ 152  154 }
+ 155 
+ 156 /*
+ 157 添加对象
+ 158 */
+ 159 w3dshow.prototype.InitAddObject = function (_obj) {
+ 160     192 }
+ 193 
+ 194 //创建地板
+ 195 w3dshow.prototype.CreateFloor = function (_obj) {
+ 196     v  199 }
+ 200 //创建墙体
+ 201 w3dshow.prototype.CreateWall = function (_this, _obj) {
+ 202     if (_this == null) {
+ 203   //。。。 249 }
+ 250 //挖洞
+ 251 w3dshow.prototype.CreateHole = function (_this, _obj) {
+ 252     if (_this == null) {
+ 253         _this = this;
+ 254     }
+ 255    290 }
+ 291 //模型合并 使用ThreeBSP插件mergeOP计算方式 -表示减去 +表示加上 
+ 292 w3dshow.prototype.mergeModel = function (_this, mergeOP, _fobj, _sobj) {
+ 293      326     result.uuid= _fobj.uuid+mergeOP+_sobj.uuid;
+ 327     result.name=_fobj.name+mergeOP+_sobj.name;
+ 328     result.material.needsUpdate = true;
+ 329     result.geometry.buffersNeedUpdate = true;
+ 330     result.geometry.uvsNeedUpdate = true;
+ 331     var _foreFaceSkin = null;
+ 332     for (var i = 0; i < result.geometry.faces.length; i++) {
+ 333         var _faceset = false;
+ 334         for (var j = 0; j < _fobj.geometry.faces.length; j++) {
+ 335             if (result.geometry.faces[i].vertexNormals[0].x === _fobj.geometry.faces[j].vertexNormals[0].x
+ 336                 && result.geometry.faces[i].vertexNormals[0].y === _fobj.geometry.faces[j].vertexNormals[0].y
+ 337                 && result.geometry.faces[i].vertexNormals[0].z === _fobj.geometry.faces[j].vertexNormals[0].z
+ 338                  && result.geometry.faces[i].vertexNormals[1].x === _fobj.geometry.faces[j].vertexNormals[1].x
+ 339                 && result.geometry.faces[i].vertexNormals[1].y === _fobj.geometry.faces[j].vertexNormals[1].y
+ 340                 && result.geometry.faces[i].vertexNormals[1].z === _fobj.geometry.faces[j].vertexNormals[1].z
+ 341                 && result.geometry.faces[i].vertexNormals[2].x === _fobj.geometry.faces[j].vertexNormals[2].x
+ 342         etry.faces[j].color.b * 0x0000ff;
+ 346                 _faceset =true;
+ 347             }
+ 348         }
+ 349         if (_faceset == false){
+ 350             for(var j = 0; j < _sobj.geometry.faces.length; j++) {
+ 351                 if (result.geometry.faces[i].vertexNormals[0].x === _sobj.geometry.faces[j].vertexNormals[0].x
+ 352                     && result.geometry.faces[i].vertexNormals[0].y === _sobj.geometry.faces[j].vertexNormals[0].y
+ 353                     && result.geometry.faces[i].vertexNormals[0].z === _sobj.geometry.faces[j].vertexNormals[0].z
+ 354                      && result.geometry.faces[i].vertexNormals[1].x === _sobj.geometry.faces[j].vertexNormals[1].x
+ 355                     && result.geometry.faces[i].vertexNormals[1].y === _sobj.geometry.faces[j].vertexNormals[1].y
+ 356              364                 }
+ 365             }
+ 366         }
+ 367         if (_faceset == false) {
+ 368             result.geometry.faces[i].color.setHex(_foreFaceSkin);
+ 369         }
+ 370     // result.geometry.faces[i].materialIndex = i
+ 371     }
+ 372     result.castShadow = true;
+ 373     result.receiveShadow = true;
+ 374     return result;
+ 375 }
+ 376 //创建盒子体
+ 377 w3dshow.prototype.createCube = function (_this, _obj) {
+ 378     if (_this == null) {
+ 379         _this = this;
+ 380     }
+ 381     var _length = _obj.length || 1000;//默认1000
+ 382     var _width = _obj.width || _length;
+ 383     var _h 
+ 395     var skin_up_obj = {
+ 396         vertexColors: THREE.FaceColors
+ 397     }
+ 398     var skin_down_obj = skin_up_obj,
+ 399         skin_fore_obj = skin_up_obj,
+ 400         skin_behind_obj = skin_up_obj,
+ 401         skin_left_obj = skin_up_obj,
+ 402         skin_right_obj = skin_up_obj;
+ 403     var skin_opacity = 1;
+ 404     if (_obj.style != null && typeof (_obj.style) != 'undefined'
+ 405         && _obj.style.skin != null && typeof (_obj.style.skin) != 'undefined') {
+ 406         //透明度
+ 407         if (_obj.style.skin.opacity != null && typeof (_obj.style.skin.opacity) != 'undefined') {
+ 408             skin_opacity = _obj.style.skin.opacity;
+ 409             console.log(skin_opacity)
+ 410         }
+ 411         //上
+ 412         skin_up_obj = _this.createSkinOptionOnj(_this, _length, _width, _obj.style.skin.skin_up, cubeGeometry, 4);
+ 413         //下
+ 414         skin_down_obj = _this.createSkinOptionOnj(_this, _length, _width, _obj.style.skin.skin_down, cubeGeometry, 6);
+ 415         //前
+ 416         skin_fore_obj = _this.createSkinOptionOnj(_this, _length, _width, _obj.style.skin.skin_fore, cubeGeometry, 0);
+ 417         //后
+ 418         skin_behind_obj = _this.createSkinOptionOnj(_this, _length, _width, _obj.style.skin.skin_behind, cubeGeometry, 2);
+ 419         //左
+ 420         skin_left_obj = _this.createSkinOptionOnj(_this, _length, _width, _obj.style.skin.skin_left, cubeGeometry, 8);
+ 421         //右
+ 422         skin_right_obj = _this.createSkinOptionOnj(_this, _length, _width, _obj.style.skin.skin_right, cubeGeometry, 10);
+ 423     }
+ 424     var cubeMaterialArray = [];
+ 425     cubeMaterialArray.push(new THREE.MeshLambertMaterial(skin_fore_obj));
+ 426     cubeMaterialArray.push(new THREE.MeshLambertMaterial(skin_behind_obj));
+ 427     cubeMaterialArray.push(new THREE.MeshLambertMaterial(skin_up_obj));
+ 428     cubeMaterialArray.push(new THREE.MeshLambertMaterial(skin_down_obj));
+ 429     cubeMaterialArray.push(new THREE.MeshLambertMaterial(skin_right_obj));
+ 430     cubeMaterialArray.push(new THREE.MeshLambertMaterial(skin_left_obj));
+ 431     var cubeMaterials = new THREE.MeshFaceMaterial(cubeMaterialArray);
+ 432     cube = new THREE.Mesh(cubeGeometry, cubeMaterials);
+ 433     cube.castShadow = true;
+ 434     cube.receiveShadow = true;
+ 435     cube.uuid = _obj.uuid;
+ 436     cube.name =  446                     break;
+ 447                 case 'z':
+ 448                     cube.rotateZ(rotation_obj.degree);
+ 449                     break;
+ 450                 case 'arb':
+ 451                     cube.rotateOnAxis(new THREE.Vector3(rotation_obj.degree[0], rotation_obj.degree[1], rotation_obj.degree[2]), rotation_obj.degree[3]);
+ 452                     break;
+ 453             }
+ 454         });
+ 455     }
+ 456 
+ 457     return cube;
+ 458 }
+ 459 //创建二维平面-长方形
+ 460 w3dshow.prototype.createPlaneGeometry = function (_this,_obj) {
+ 461           //options={           
+ 462           //    width:0,
+ 463           //    height:0,
+ 464           //    pic:"",
+ 465           //    transparent:true,
+ 466           //    opacity:1
+ 467     //    blending:false,
+ 468     //position: { x:,y:,z:},
+ 469     //rotation: { x:,y:,z:},
+ 470     //}
+ 471   
+ 472    var  options = _obj;
+ 473     if (typeof options.pic == "string") {//传入的材质是图片路径，使用 textureloader加载图片作为材质
+ 474         var loader = new THREE.TextureLoader();
+ 475         loader.setCrossOrigin(this.crossOrigin);
+ 476         var texture = loader.load(options.pic, function () { }, undefined, function () { });
+ 477     } else {
+ 478         var texture = new THREE.CanvasTexture(options.pic)
+ 479     }
+ 480     var MaterParam = {//材质的参数
+ 481         map: texture,
+ 482         overdraw: true,
+ 483         side: THREE.FrontSide,
+ 484         //              blending: THREE.AdditiveBlending,
+ 485         transparent: options.transparent,
+ 486         //needsUpdate:true,
+ 487         //premultipliedAlpha: true,
+ 488         opacity: options.opacity
+ 489     }
+ 490     if (options.blending) {
+ 491         MaterParam.blending = THREE.AdditiveBlending//使用饱和度叠加渲染
+ 492     }
+ 493     var plane = new THREE.Mesh(
+ 494         new THREE.PlaneGeometry(options.width, options.height, 1, 1),
+ 495         new THREE.MeshBasicMaterial(MaterParam)
+ 496     );
+ 497     plane.position.x = options.position.x;
+ 498  502     plane.rotation.z = options.rotation.z;
+ 503     return plane;
+ 504 }
+ 505 //创建空柜子
+ 506 w3dshow.prototype.createEmptyCabinet = function (_this, _obj) {
+ 507     /* 参数demo
+ 508     {
+ 509     show:true,
+ 510     name: 'test',
+ 511     uuid: 'test',
+ 512    rotation: [{ direction: 'y', degree: 0.25*Math.PI}],//旋转     uuid:'',
+ 513     objType: 'emptyCabinet',
+ 514     transparent:true,
+ 515     size:{length:50,width:60,height:200, thick:2},
+ 516     position: { x: -220, y: 105, z: -150 },
+ 517     doors: {
+ 518         doorType:'lr',// ud门 lr左右门
+ 519         doorSize:[1],
+ 520         skins:[ {
+ 521             skinColor: 0x333333,
+ 522             skin_fore: {
+ 523                 imgurl: "../datacenterdemo/res/rack_door_back.jpg",
+ 524             },
+ 525             skin_behind: {
+ 526                 imgurl: "../datacenterdemo/res/rack_front_door.jpg",
+ 527             }
+ 528         }]
+ 529     },
+ 530     skin:{
+ 531             skinColor: 0xdddddd,
+ 532             
+ 533                 skin:{
+ 534                             skinColor: 0xdddddd,
+ 535                             skin_up: { imgurl: "../datacenterdemo/res/rack_door_back.jpg" },
+ 536                             skin_down: { imgurl: "../datacenterdemo/res/rack_door_back.jpg" },
+ 537                             skin_fore: { imgurl: "../datacenterdemo/res/rack_door_back.jpg" },
+ 538                             skin_behind: { imgurl: "../datacenterdemo/res/rack_door_back.jpg" },
+ 539                             skin_left: { imgurl: "../datacenterdemo/res/rack_door_back.jpg" },
+ 540                             skin_right: { imgurl: "../datacenterdemo/res/rack_door_back.jpg" },
+ 541                 }
+ 542         
+ 543         }
+ 544 }
+ 545     */
+ 546     var _this = Obj;
+ 547     //创建五个面
+ 548     //上
+ 549     var upobj= {
+ 550         show: true,
+ 551         uuid: "",
+ 552         name: '',
+ 553         objType: 'cube',
+ 554         length: _obj.size.length+1,
+ 555         width: _obj.size.width ,
+ 556         height: _obj.size.thick + 1,
+ 557         x: _obj.position.x+1,
+ 558         y: _obj.position.y+(_obj.size.height/2-_obj.size.thick/2),
+ 559         z:_obj.position.z,
+ 560         style: {
+ 561             skinColor: _obj.skin.skinColor,
+ 562             skin: _obj.skin.skin_up.skin
+ 563         }
+ 564     }
+ 565     var upcube = _this.createCube(_this, upobj);
+ 566     //左
+ 567     var leftobj = {
+ 568         show: true,
+ 569         uuid: "",
+ 570         name: '',
+ 571         objType: 'cube',
+ 572         length: _obj.size.length,
+ 573         width: _obj.size.thick,
+ 574         height: _obj.size.height,
+ 575         x: 0,
+ 576         y: -(_obj.size.height / 2 - _obj.size.thick / 2),
+ 577         z: 0 - (_obj.size.width / 2 - _obj.size.thick / 2) - 1,
+ 578         style: {
+ 579             skinColor: _obj.skin.skinColor,
+ 580             skin: _obj.skin.skin_left.skin
+ 581         }
+ 582     }
+ 583     var leftcube = _this.createCube(_this, leftobj);
+ 584     var Cabinet = _this.mergeModel(_this, '+', upcube, leftcube);
+ 585     //右
+ 586     var Rightobj = {
+ 587         show: true,
+ 588         uuid: "",
+ 589         name: '',
+ 590         objType: 'cube',
+ 591         length: _obj.size.length,
+ 592         width: _obj.size.thick,
+ 593         height: _obj.size.height,
+ 594         x: 0,
+ 595         y: -(_obj.size.height / 2 - _obj.size.thick / 2),
+ 596         z: (_obj.size.width / 2 - _obj.size.thick / 2)+1,
+ 597         style: {
+ 598             skinColor: _obj.skin.skinColor,
+ 599             skin: _obj.skin.skin_right.skin
+ 600         }
+ 601     }
+ 602     var Rightcube = _this.createCube(_this, Rightobj);
+ 603     Cabinet = _this.mergeModel(_this, '+', Cabinet, Rightcube);
+ 604     //后
+ 605     var Behidobj = {
+ 606         show: true,
+ 607         uuid: "",
+ 608         name: '',
+ 609         objType: 'cube',
+ 610         length: _obj.size.thick,
+ 611         width: _obj.size.width,
+ 612         height: _obj.size.height,
+ 613         x: (_obj.size.length / 2 - _obj.size.thick / 2)+1,
+ 614         y: -(_obj.size.height / 2 - _obj.size.thick / 2),
+ 615         z:0,
+ 616         style: {
+ 617             skinColor: _obj.skin.skinColor,
+ 618            skin: _obj.skin.skin_behind.skin
+ 619         }
+ 620     }
+ 621     var Behindcube = _this.createCube(_this, Behidobj);
+ 622     Cabinet = _this.mergeModel(_this, '+', Cabinet, Behindcube);
+ 623     //下
+ 624     var Downobj = {
+ 625         show: true,
+ 626         uuid: "",
+ 627         name: '',
+ 628         objType: 'cube',
+ 629         length: _obj.size.length+1,
+ 630         width: _obj.size.width,
+ 631         height: _obj.size.thick,
+ 632   645     tempobj.name = _obj.name;
+ 646     tempobj.uuid = _obj.uuid;
+ 647     Cabinet.name = _obj.shellname,
+ 648     _this.objects.push(Cabinet);
+ 649     tempobj.position = Cabinet.position;
+ 650     //门
+ 651     if (_obj.doors != null && typeof (_obj.doors) != 'undefined') {
+ 652         var doors = _obj.doors;
+ 653         if (doors.skins.length == 1) {//单门
+ 654             var singledoorobj = {
+ 655                 show: true,
+ 656                 uuid:"",
+ 657                 name: _obj.doors.doorname[0],
+ 658                 objType: 'cube',
+ 659                 length: _obj.size.thick,
+ 660                 width: _obj.size.width,
+ 661                 height: _obj.size.height,
+ 662                 x: _obj.position.x - _obj.size.length / 2 - _obj.size.thick / 2,
+ 663                 y: _obj.position.y,
+ 664  672             tempobj.add(singledoorcube);
+ 673         } else if (doors.skins.length > 1) {//多门
+ 674 
+ 675 
+ 676         }
+ 677 
+ 678     }
+ 679 
+ 680     if (_obj.rotation != null && typeof (_obj.rotation) != 'undefined' && _obj.rotation.length > 0) {
+ 681         $.each(_obj.rotation, function (index, rotation_obj) {
+ 682             switch (rotation_obj.direction) {
+ 683                 case 'x':
+ 684                     tempobj.rotateX(rotation_obj.degree);
+ 685                     break;
+ 686            696         });
+ 697     }
+ 698   tation.y;
+ 706     var tmpobj2 = _this.createPlaneGeometry(_this, _obj);
+dth = 128,imgheight=128;
+ 712     if (_obj.width != null&& typeof (_obj.width) != 'undefined') {
+ 713         imgwidth = _obj.width;
+ 714     }
+ 715     if (_obj.height != null && typeof (_obj.height) != 'undefined') {
+ 716         imgheight = _obj.height;
+ 717     }
+ 718     var texture = new THREE.TextureLoader().load(_obj.imgurl);
+ 719     var _repeat = false;
+ 720     if (_obj.repeatx != null && typeof (_obj.repeatx) != 'undefined' && _obj.repeatx==true) {
+ 721         texture.wrapS = THREE.RepeatWrapping;
+ 722         _repeat = true;
+ 723     }
+ 724     if (_obj.repeaty != null && typeof (_obj.repeaty) != 'undefined' && _obj.repeaty == true) {
+ 725         texture.wrapT = THREE.RepeatWrapping;
+ 726         _repeat = true;  736         if (_this.commonFunc.hasObj(_obj.imgurl)) {
+ 737             return {
+ 738                 map: _this.createSkin(flength, fwidth, _obj),transparent:true
+ 739             }
+ 740         } else {
+ 741             if (_this.commonFunc.hasObj(_obj.skinColor)) {
+ 742                 _cube.faces[_cubefacenub].color.setHex(_obj.skinColor);
+ 743                 _cube.faces[_cubefacenub + 1].color.setHex(_obj.skinColor);
+ 744             }
+ 745             770         $.each(_this.objects, function (index,_obj) {
+ 771             if (_obj.name != null && _obj.name != '') {
+ 772                 if (_obj.name == _objname) {
+ 773                     findedobj = _obj;
+ 774                     return true;
+ 775                 }
+ 776             }
+ 777         });
+ 778         return findedobj;
+ 779     },
+ 780     //复制对象
+ 781     cloneObj: function (_objname, newparam) {
+ 782         /*newparam
+ 783         {
+ 784         show: true,
+ 785         uuid:
+ 786         copyfrom: 'cabinet1_1',
+ 787         name:
+ 788         childrenname:[]
+ 789         objType: 'cloneObj',
+ 790         position:{x:y:z:}//相对复制品的
+ 791         scale:{x:1,y:1,z:1}
+ 792          rotation: [{ direction: 'y', degree: 0.25*Math.PI}],//旋转     uuid:'',
+ 793 tion) {
+ 820                         case 'x':
+ 821                             newobj.rotateX(rotation_obj.degree);
+ 822                             break;
+ 823                         case 'y':
+ 824  834         }
+ 835         newobj.name = newparam.name;
+ 836         newobj.uuid = newparam.uuid;
+ 837         return h > 0) {
+ 847                 $.each(_obj.material.materials, function (index,obj) {
+ 848                     obj.emissive.setHex(_color);
+ 849                 });
+ 850             }
+ 851         }
+ 852     },
+ 853     //添加图片标识
+ 854     addIdentification: function (_objname, _obj) {
+ 855         /*
+ 856  879     },
+ 880     //添加文字
+ 881     makeTextSprite: function (_objname, parameters)
+ 882     {
+ 883         var _this = Obj;
+ 884      909         sprite.name = parameters.name;
+ 910         sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
+ 911         _this.addObject(sprite);
+ 912         }
+ 913 }
+ 914 w3dshow.prototype.loadObj = function (_obj) {
+ 915     var jsload  927         });
+ 928 }
+ 929 
+ 930 //添加按钮
+ 931 w3dshow.prototype.addBtns = function (_btnobjs) {
+ 9  _obj.btnTitle + '" id="' + _obj.btnid + '" />');
+ 937         
+ 947 var dbclick =0;
+ 948 w3dshow.prototype.onDocumentMouseDown = function (event) {
+ 949     dbclick++;
+ 950     var _this = Obj;
+ 951       984 
+ 985 }
+ 986 
+ 987 
+ 988 w3dshow.prototype.addTestObj = function () {
+ 989     
+ 990     var _this = Obj;
+ 991    
+ 992     //  0*Math.PI, z: 0 },
+1014     //    blending: false
+1015     //});
+1016 }
